@@ -25,10 +25,10 @@ data class Curso(var nome: String,
         return true
     }
     fun excluirAluno(umAluno: Aluno): Boolean {
-        for (aluno in alunosMatriculados!!) {
+        for (aluno in alunosMatriculados) {
             if (aluno.codigo == umAluno.codigo) {
                 println("Aluno ${umAluno.nome} de código ${umAluno.codigo} excluido com sucesso.")
-                alunosMatriculados!!.remove(umAluno)
+                alunosMatriculados.remove(umAluno)
                 return true
             }
         }

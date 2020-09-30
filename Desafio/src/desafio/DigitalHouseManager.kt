@@ -186,4 +186,54 @@ class DigitalHouseManager() {
         }
         return false
     }
+    fun cursoMatriculado(codigo: Int): Boolean {
+        var alunoExiste = false
+        for(aluno in listaAlunos) {
+            if(codigo == aluno.codigo) {
+                alunoExiste = true
+            }
+        }
+        if (alunoExiste){
+            for(matricula in listaMatrículas) {
+                if (codigo == matricula.aluno.codigo) {
+                    println("Aluno com codigo $codigo está matriculado no curso ${matricula.curso.nome}.")
+                    return true
+                }
+            }
+            println("Aluno com codigo $codigo não está matriculado em nenhum curso.")
+            return false
+        } else {
+            println("Aluno com codigo $codigo não existe.")
+            return false
+        }
+    }
+    fun exibeDados() {
+        println("Todos os alunos")
+        for (aluno in listaAlunos) {
+            println("nome: ${aluno.nome} | sobrenome: ${aluno.sobrenome} | codigo:${aluno.codigo}")
+        }
+        println("")
+        println("Todos os professores")
+        for (professor in listaProfessores) {
+            if(professor is ProfessorTitular) {
+                println("nome: ${professor.nome} | sobrenome: ${professor.sobrenome} | tempo de casa: ${professor.tempoDeCasa} | codigo: ${professor.codigo} | especialidade: ${professor.especialidade}")
+            }
+            if(professor is ProfessorAdjunto) {
+                println("nome: ${professor.nome} | sobrenome: ${professor.sobrenome} | tempo de casa: ${professor.tempoDeCasa} | codigo: ${professor.codigo} | horas monitoria: ${professor.horasMonitoria}")
+            }
+        }
+        println("")
+        println("Todos os cursos")
+        for (curso in listaCursos) {
+            println("nome: ${curso.nome} | codigo: ${curso.codigo} | professor titular: ${curso.professorTitular?.nome} | professor adjunto: ${curso.professorAdjunto?.nome} | quantidade maxima: ${curso.quantidadeMaxAlunos}")
+            for (aluno in curso.alunosMatriculados) {
+                println("nome: ${aluno.nome} | sobrenome: ${aluno.sobrenome} | codigo: ${aluno.codigo}")
+            }
+        }
+        println("")
+        println("Todas as matriculas")
+        for (matricula in listaMatrículas) {
+            println("nome: ${matricula.aluno.nome} | curso: ${matricula.curso.nome} | data: ${matricula.dataMatricula}")
+        }
+    }
 }
