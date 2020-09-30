@@ -18,7 +18,7 @@ class DigitalHouseManager() {
             }
         }
         println("Curso $nome com codigo $codigoCurso registrado com sucesso.")
-        listaCursos.add(Curso(nome, codigoCurso, null, null, quantidadeMaximaDeAlunos, null))
+        listaCursos.add(Curso(nome, codigoCurso, null, null, quantidadeMaximaDeAlunos, mutableListOf<Aluno>()))
         return true
     }
     fun excluirCurso(codigoCurso: Int): Boolean {
@@ -80,6 +80,7 @@ class DigitalHouseManager() {
                 return false
             }
         }
+        listaAlunos.add(Aluno(nome, sobrenome,codigoAluno))
         println("Aluno $nome com codigo $codigoAluno registrado com sucesso.")
         return true
     }
@@ -92,38 +93,97 @@ class DigitalHouseManager() {
                                     null,
                                     null,
                                     0,
-                                    null)
+                                    mutableListOf<Aluno>())
         var alunoEncontrado = Aluno("",
                                     "",
                                     0)
+        var quantAlunosMatriculados = 0
         for (curso in listaCursos) {
             if (curso.codigo == codigoCurso) {
-                println("Curso encontrado: ${curso.nome}")
                 cursoEncontrado = curso
-                var quantAlunosMatricula = curso.alunosMatriculados?.size
+                quantAlunosMatriculados = curso.alunosMatriculados.size
+                if (quantAlunosMatriculados==1) {
+                    println("Curso ${curso.nome} encontrado com $quantAlunosMatriculados aluno matriculado.")
+                } else {
+                    println("Curso ${curso.nome} encontrado com $quantAlunosMatriculados alunos matriculados.")
+                }
                 existeCurso = true
             }
         }
         for (aluno in listaAlunos) {
             if (aluno.codigo == codigoAluno) {
-                println("Aluno encontrado: ${aluno.nome}")
+                println("Aluno ${aluno.nome} encontrado.")
                 alunoEncontrado = aluno
                 existeAluno = true
             }
         }
         if(existeCurso && existeAluno) {
-            if(cursoEncontrado.alunosMatriculados?.size!! < cursoEncontrado.quantidadeMaxAlunos) {
+            return if(quantAlunosMatriculados < cursoEncontrado.quantidadeMaxAlunos) {
                 var alunoAdicionado = cursoEncontrado.adicionarUmAluno(alunoEncontrado)
                 println("Aluno ${alunoEncontrado.nome} adicionado no curso ${cursoEncontrado.nome}.")
                 listaMatrículas.add(Matricula(alunoEncontrado, cursoEncontrado, LocalDate.now()))
                 println("Matricula realizada com sucesso.")
-                return alunoAdicionado
+                alunoAdicionado
             } else {
-                println("Não existe vagas para o curso ${cursoEncontrado.nome}.")
-                return false
+                println("Não foi possivel adicionar o aluno ${alunoEncontrado.nome} no curso ${cursoEncontrado.nome}.")
+                println("Quantidade máxima de alunos ${cursoEncontrado.quantidadeMaxAlunos}, curso lotado.")
+                false
             }
-        } else {
+        } else if (!existeCurso && !existeAluno){
+            println("Não existe curso com codigo $codigoCurso e aluno com codigo $codigoAluno.")
+            return false
+        } else if (existeCurso && !existeAluno){
+            println("Não existe aluno com codigo $codigoAluno.")
+            return false
+        } else if (!existeCurso && existeAluno){
+            println("Não existe curso com codigo $codigoCurso.")
             return false
         }
+        return false
+    }
+    fun alocarProfessores(codigoCurso: Int,
+                          codigoTitular: Int,
+                          codigoAdjunto: Int): Boolean {
+        var profTitular = ProfessorTitular("",
+                                           "",
+                                           0,
+                                            -1,
+                                            "")
+        var profAdjunto = ProfessorAdjunto("",
+                                            "",
+                                            9,
+                                            -1,
+                                            0)
+        for (professor in listaProfessores) {
+            if (professor.codigo == codigoTitular && professor is ProfessorTitular) {
+                profTitular = professor
+            }
+            if (professor.codigo == codigoAdjunto && professor is ProfessorAdjunto) {
+                profAdjunto = professor
+            }
+        }
+        if (profAdjunto.codigo != -1 && profTitular.codigo != -1) {
+            for (curso in listaCursos) {
+                if (curso.codigo == codigoCurso) {
+                    println("Professor Titular ${profTitular.nome} e Professor Adjunto ${profAdjunto.nome} foram alocados no curso ${curso.nome} com sucesso.")
+                    curso.professorTitular = profTitular
+                    curso.professorAdjunto = profAdjunto
+                    return true
+                }
+            }
+        } else if (profTitular.codigo==-1 && profAdjunto.codigo==-1) {
+            println("Professor Titular e Adjunto com códigos $codigoTitular e $codigoAdjunto não existem.")
+            return false
+        } else if (profTitular.codigo==-1) {
+            println("Professor Titular com código $codigoTitular não existe.")
+            return false
+        } else if (profAdjunto.codigo==-1) {
+            println("Professor Adjunto com código $codigoAdjunto não existe.")
+            return false
+        } else {
+            println("Curso com código $codigoCurso não existe.")
+            return false
+        }
+        return false
     }
 }

@@ -5,7 +5,7 @@ data class Curso(var nome: String,
                 var professorTitular: ProfessorTitular?,
                 var professorAdjunto: ProfessorAdjunto?,
                 var quantidadeMaxAlunos: Int,
-                var alunosMatriculados: MutableList<Aluno>?) {
+                var alunosMatriculados: MutableList<Aluno>) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Aluno) return false
@@ -14,23 +14,25 @@ data class Curso(var nome: String,
         return true
     }
     fun adicionarUmAluno(umAluno: Aluno): Boolean {
-        if(alunosMatriculados?.equals(umAluno)!!) {
-            println("O código ${umAluno.codigo} já está sendo usado.")
-            return false
-        } else {
-            alunosMatriculados?.add(umAluno)
-            println("Aluno ${umAluno.nome} matriculado com o código ${umAluno.codigo}.")
-            return true
+        for (aluno in alunosMatriculados) {
+            if (aluno.codigo == umAluno.codigo) {
+                println("Aluno ${aluno.nome} com o código ${aluno.codigo} já está matriculado")
+                return false
+            }
         }
+        alunosMatriculados.add(umAluno)
+        println("Aluno ${umAluno.nome} matriculado com o código ${umAluno.codigo} com sucesso.")
+        return true
     }
     fun excluirAluno(umAluno: Aluno): Boolean {
-        if(alunosMatriculados?.equals(umAluno)!!) {
-            println("Aluno ${umAluno.nome} de código ${umAluno.codigo} excluido com sucesso.")
-            alunosMatriculados!!.remove(umAluno)
-            return true
-        } else {
-            println("Aluno ${umAluno.nome} de código ${umAluno.codigo} não existe.")
-            return false
+        for (aluno in alunosMatriculados!!) {
+            if (aluno.codigo == umAluno.codigo) {
+                println("Aluno ${umAluno.nome} de código ${umAluno.codigo} excluido com sucesso.")
+                alunosMatriculados!!.remove(umAluno)
+                return true
+            }
         }
+        println("Aluno ${umAluno.nome} de código ${umAluno.codigo} não existe.")
+        return true
     }
 }
